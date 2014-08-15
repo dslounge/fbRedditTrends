@@ -1,0 +1,38 @@
+/**
+ * Created by Rafael Mendiola (rmendiola@alum.mit.edu) on 8/13/14.
+ */
+
+.fbredd-item{
+    margin-left: -4px;
+    padding: 3px 4px;
+    margin-right: 12px;
+}
+
+
+.fbredd-link{
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.fbredd-text-block{
+    overflow: hidden;
+}
+
+.fbredd-details{
+    color: #9197a3;
+}
+
+.fbredd-details a{
+    color: #9197a3;
+}
+
+.fbredd-trending-arrow{
+    float:left;
+    margin: -1px 5px -1px 0;
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/trend_arrow.png');
+    background-repeat: no-repeat;
+    background-size: 35px 86px;
+    background-position: -17px -69px;
+    height: 16px;
+    width: 16px;
+}
