@@ -2,7 +2,7 @@
  * Created by Rafael Mendiola (rmendiola@alum.mit.edu) on 8/13/14.
  */
 
-var title = "TRENDING ON REDDIT";
+var titleText = "TRENDING ON REDDIT";
 var reddit = "http://www.reddit.com";
 var hotUrl = reddit + "/hot.json";
 
@@ -15,7 +15,7 @@ $(function () {
     var container = $('#pagelet_trending_tags_and_topics');
     var header = container.find(".uiHeader");
     var title = container.find(".uiHeaderTitle a");
-    title.html(title);
+    title.html(titleText);
 
     //find the container that holds the children and remove its contents.
     var itemsContainer = $(header.parent().children()[1]);
