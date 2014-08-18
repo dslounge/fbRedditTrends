@@ -4,7 +4,8 @@
 
 var titleText = "TRENDING ON REDDIT";
 var reddit = "http://www.reddit.com";
-var hotUrl = reddit + "/hot.json";
+var listingLimit = "5";
+var hotUrl = reddit + "/hot.json?limit=" + listingLimit;
 
 // function for easy tracing.
 function line(txt) {
