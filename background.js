@@ -5,24 +5,36 @@
 var titleText = "TRENDING ON REDDIT";
 var reddit = "http://www.reddit.com";
 var listingLimit = "5";
-var hotUrl = reddit + "/hot.json?limit=" + listingLimit;
+var hotUrl = reddit + "/hot.json";
+
+var initialized = false;
+//key dom elements
+var container = null;
+var header = null;
+var title = null;
+var itemsContainer = null;
 
 // function for easy tracing.
 function line(txt) {
     console.log(txt);
 }
 
-$(function () {
-    var container = $('#pagelet_trending_tags_and_topics');
-    var header = container.find(".uiHeader");
-    var title = container.find(".uiHeaderTitle a");
-    title.html(titleText);
+/**
+ * identifies the key dom elements we'll be replacing.
+ */
+function identifyDOMElements(){
+    container = $('#pagelet_trending_tags_and_topics');
+    header = container.find(".uiHeader");
+    title = container.find(".uiHeaderTitle a");
+    itemsContainer = $(header.parent().children()[1]);
+}
 
-    //find the container that holds the children and remove its contents.
-    var itemsContainer = $(header.parent().children()[1]);
-    itemsContainer.html("");
+function loadStories(numStories){
 
-    $.getJSON(hotUrl, function (returnObj) {
+    var url = (numStories) ? hotUrl + "?limit=" + listingLimit : hotUrl;
+
+    $.getJSON(url, function (returnObj) {
+        line("--stories loaded--");
         var items = [];
         line(returnObj);
         var listings = returnObj.data.children;
@@ -57,6 +69,51 @@ $(function () {
             html: items.join("")
         }).appendTo(itemsContainer);
 
-    });
+        //add the 'more stories' link if showing limited stories.
+        if(numStories != null){
+            var seeMore = $("<a href=\"#\" class=\"more-link\">" +
+                "<i class=\"dropdown-icon\"></i>" +
+                "See More</a>")
 
+            seeMore.appendTo(itemsContainer);
+            seeMore.click(function(){
+                itemsContainer.empty();
+                loadStories(); //load all stories.
+            });
+        }
+
+        //hack for making the list scrollable:
+        $(window).trigger('resize');
+
+
+    });
+}
+
+
+function init(){
+    line("--init--");
+    title.html(titleText);
+    itemsContainer.empty();
+    itemsContainer.change(function(){
+        line("trends change!");
+    });
+    loadStories(5);
+}
+
+
+
+//try running right away. If the elements are available, start loading stories
+//otherwise, just wait until the DOM is ready.
+identifyDOMElements();
+if(itemsContainer){
+    initialized = true;
+    init();
+}
+
+$(function () {
+    line("dom ready!");
+    if(!initialized){
+        identifyDOMElements();
+        init();
+    }
 });

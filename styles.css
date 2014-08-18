@@ -36,3 +36,18 @@
     height: 16px;
     width: 16px;
 }
+
+.dropdown-icon{
+    background-image: url('chrome-extension://__MSG_@@extension_id__/images/dropdown.png');
+    background-repeat: no-repeat;
+    background-size: 53px 226px;
+    background-position: -38px -218px;
+    float: left;
+    height: 5px;
+    margin: 4px 8px 4px 4px;
+    width: 9px;
+}
+
+.more-link{
+    color: #6d84b4;
+}
