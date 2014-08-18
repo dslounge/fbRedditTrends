@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
 
-    "name": "Reddit Facebook trends",
+    "name": "Replace Facebook trends with Reddit",
     "description": "This extension replaces lame Facebook trends with interesting Reddit stories.",
     "version": "1.12",
 
