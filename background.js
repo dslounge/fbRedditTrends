@@ -166,7 +166,6 @@ function init(){
     fbTrendsTitle.click(function(){
         redditContainer.hide();
         fbTrendsContainer.show();
-        
         fbTrendsTitle.removeClass("fbredd-link-inactive");
         redditTrendsTitle.addClass("fbredd-link-inactive");
     });
