@@ -21,7 +21,7 @@
         {
             "matches": ["https://www.facebook.com/*"],
             "css": ["styles.css"],
-            "js": ["jquery-2.1.1.min.js", "background.js"]
+            "js": ["jquery-2.1.1.min.js", "arrive-2.0.0.min.js", "background.js"]
         }
     ],
     "web_accessible_resources": [

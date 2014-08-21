@@ -49,6 +49,8 @@
 }
 
 .more-link{
+    display: block;
+    margin-top: 5px;
     color: #6d84b4;
 }
 

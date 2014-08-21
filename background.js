@@ -190,3 +190,11 @@ $(function () {
         init();
     }
 });
+
+/**
+ * Listen for creation of new trending topics panel. This is for when
+ */
+$(document).arrive("#pagelet_trending_tags_and_topics", function() {
+    identifyDOMElements();
+    init();
+});
