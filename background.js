@@ -15,11 +15,13 @@ var githubUrl= "https://github.com/dslounge/fbRedditTrends";
 var initialized = false;
 //key dom elements
 var container = null;
+var rightColFixedContainer = null; //the div that gets a fixed position after updating contents.
 var header = null;
 var fbTrendsTitle = null;
 var fbTrendsContainer = null;
 var redditTrendsTitle = null;
 var redditContainer = null;
+
 
 
 // function for easy tracing.
@@ -31,6 +33,10 @@ function line(txt) {
  * identifies the key dom elements we'll be working with. It also makes the container for reddit trends.
  */
 function identifyDOMElements(){
+    //we need to track this div because it gets a fixed position after loading reddit stories,
+    //and we need to undo that when it happens.
+    rightColFixedContainer = $($("#rightCol").children().children().children()[0]);
+
     container = $('#pagelet_trending_tags_and_topics');
     header = container.find(".uiHeader");
 
@@ -137,6 +143,9 @@ function loadStories(numStories){
             .append(shareLink);
         redditContainer.append(about);
 
+        //remove fixed element css that occurs after loading stories.
+        rightColFixedContainer.removeClass("fixed_elem");
+        rightColFixedContainer.removeAttr("style"); //removes 'top' css style.
     });
 }
 
