@@ -99,13 +99,7 @@ function loadStories(numStories){
         });
 
         //Add all the items to a div and stick it in the itemsContainer.
-
         redditContainer.html(items.join(""));
-
-//        $("<div/>", {
-//            "class": "fbredd-stories-container",
-//            html: items.join("")
-//        }).appendTo(redditContainer);
 
         //add the 'more stories' link if showing limited stories.
         if(numStories != null){
@@ -173,8 +167,6 @@ function init(){
     loadStories(5);
 }
 
-
-
 //try running right away. If the elements are available, start loading stories
 //otherwise, just wait until the DOM is ready.
 identifyDOMElements();
@@ -192,9 +184,12 @@ $(function () {
 });
 
 /**
- * Listen for creation of new trending topics panel. This is for when
+ * Listen for creation of new trending topics panel. This is for when fb
+ * updates the page and layout asynchronously.
+ *
+ * This uses the arrive.js library: https://github.com/uzairfarooq/arrive/
  */
-$(document).arrive("#pagelet_trending_tags_and_topics", function() {
+$(document).arrive("#pagelet_trending_tags_and_topics .uiHeader", function() {
     identifyDOMElements();
     init();
 });
