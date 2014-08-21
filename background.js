@@ -2,7 +2,9 @@
  * Created by Rafael Mendiola (rmendiola@alum.mit.edu) on 8/13/14.
  */
 
-var titleText = "TRENDING ON REDDIT";
+var redditTitleText = "REDDIT TRENDS";
+var fbTitleText = "FB TRENDS";
+
 var reddit = "https://www.reddit.com";
 var listingLimit = "5";
 var hotUrl = reddit + "/hot.json";
@@ -14,8 +16,11 @@ var initialized = false;
 //key dom elements
 var container = null;
 var header = null;
-var title = null;
-var itemsContainer = null;
+var fbTrendsTitle = null;
+var fbTrendsContainer = null;
+var redditTrendsTitle = null;
+var redditContainer = null;
+
 
 // function for easy tracing.
 function line(txt) {
@@ -23,25 +28,46 @@ function line(txt) {
 }
 
 /**
- * identifies the key dom elements we'll be replacing.
+ * identifies the key dom elements we'll be working with. It also makes the container for reddit trends.
  */
 function identifyDOMElements(){
     container = $('#pagelet_trending_tags_and_topics');
     header = container.find(".uiHeader");
-    title = container.find(".uiHeaderTitle a");
-    itemsContainer = $(header.parent().children()[1]);
+
+    var titleBar = container.find(".uiHeaderTitle");
+
+    fbTrendsTitle = $("<a />").attr({href: "#"});
+    redditTrendsTitle = $("<a />").attr({href: "#"});
+
+    titleBar.empty().append(redditTrendsTitle).append("&nbsp;|&nbsp;").append(fbTrendsTitle);
+
+    var trendsParent = header.parent();
+    fbTrendsContainer = $(trendsParent.children()[1]);
+    trendsParent.append($("<div />").attr({id:"fbredd-container"}));
+    redditContainer = container.find("#fbredd-container");
+
 }
 
+/**
+ * Shows a popup in the middle of the screen with the given url, fbTrendsTitle, width and height.
+ * @param url
+ * @param title
+ * @param w
+ * @param h
+ * @returns {Window}
+ */
 function popupwindow(url, title, w, h) {
     var left = (screen.width/2)-(w/2);
     var top = (screen.height/2)-(h/2);
     return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
 }
 
+/**
+ * Loads stories from reddit and replaces fb trends.
+ * @param numStories
+ */
 function loadStories(numStories){
-
     var url = (numStories) ? hotUrl + "?limit=" + listingLimit : hotUrl;
-
     $.getJSON(url, function (returnObj) {
         line("--stories loaded--");
         var items = [];
@@ -73,10 +99,13 @@ function loadStories(numStories){
         });
 
         //Add all the items to a div and stick it in the itemsContainer.
-        $("<div/>", {
-            "class": "fbredd-stories-container",
-            html: items.join("")
-        }).appendTo(itemsContainer);
+
+        redditContainer.html(items.join(""));
+
+//        $("<div/>", {
+//            "class": "fbredd-stories-container",
+//            html: items.join("")
+//        }).appendTo(redditContainer);
 
         //add the 'more stories' link if showing limited stories.
         if(numStories != null){
@@ -84,47 +113,35 @@ function loadStories(numStories){
                 "<i class=\"dropdown-icon\"></i>" +
                 "See More</a>")
 
-            seeMore.appendTo(itemsContainer);
+            seeMore.appendTo(redditContainer);
             seeMore.click(function(){
-                itemsContainer.empty();
+                redditContainer.empty();
                 loadStories(); //load all stories.
             });
         }
 
-
         //about div
         var about = $("<div />").addClass("fbredd-about");
         var aboutTitle = $("<div />")
-            .html("Replace Facebook Trends with Reddit")
-            .addClass("about-title");
+            .html("Replace Facebook Trends with Reddit").addClass("about-title");
 
         var extensionLink = $("<a>")
-            .html("extension home")
-            .attr({href: chromeStoreUrl, target:"_blank"});
+            .html("extension home").attr({href: chromeStoreUrl, target:"_blank"});
 
         var sourceLink = $("<a>")
-            .html("open source")
-            .attr({href: githubUrl, target:"_blank"});
+            .html("open source").attr({href: githubUrl, target:"_blank"});
 
-        var shareLink = $("<a>").attr({href: "#"})
-            .html("share it")
+        var shareLink = $("<a>").attr({href: "#"}).html("share it")
             .click(function(){
                 var url = fbSharerUrl + chromeStoreUrl;
                 popupwindow(url, "fbShare", 500, 300);
             });
 
-
         about.append(aboutTitle)
             .append(extensionLink).append(" | ")
             .append(sourceLink).append(" | ")
             .append(shareLink);
-        itemsContainer.append(about);
-
-
-
-        //hack for making the list scrollable:
-        $(window).trigger('resize');
-
+        redditContainer.append(about);
 
     });
 }
@@ -132,11 +149,28 @@ function loadStories(numStories){
 
 function init(){
     line("--init--");
-    title.html(titleText);
-    itemsContainer.empty();
-    itemsContainer.change(function(){
-        line("trends change!");
+    fbTrendsContainer.hide();
+
+    redditTrendsTitle.html(redditTitleText);
+    fbTrendsTitle.html(fbTitleText);
+
+    fbTrendsTitle.addClass("fbredd-link-inactive");
+    redditTrendsTitle.click(function(){
+        fbTrendsContainer.hide();
+        redditContainer.show();
+
+        fbTrendsTitle.addClass("fbredd-link-inactive");
+        redditTrendsTitle.removeClass("fbredd-link-inactive");
     });
+
+    fbTrendsTitle.click(function(){
+        redditContainer.hide();
+        fbTrendsContainer.show();
+        
+        fbTrendsTitle.removeClass("fbredd-link-inactive");
+        redditTrendsTitle.addClass("fbredd-link-inactive");
+    });
+
     loadStories(5);
 }
 
@@ -145,7 +179,7 @@ function init(){
 //try running right away. If the elements are available, start loading stories
 //otherwise, just wait until the DOM is ready.
 identifyDOMElements();
-if(itemsContainer){
+if(fbTrendsContainer){
     initialized = true;
     init();
 }
