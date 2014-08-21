@@ -3,9 +3,12 @@
  */
 
 var titleText = "TRENDING ON REDDIT";
-var reddit = "http://www.reddit.com";
+var reddit = "https://www.reddit.com";
 var listingLimit = "5";
 var hotUrl = reddit + "/hot.json";
+var fbSharerUrl = "http://www.facebook.com/sharer.php?u=";
+var chromeStoreUrl = "http://chrome.google.com/webstore/detail/replace-facebook-trends-w/gbjbbjnmjelanjckpnebpbbgkilpgilp";
+var githubUrl= "https://github.com/dslounge/fbRedditTrends";
 
 var initialized = false;
 //key dom elements
@@ -27,6 +30,12 @@ function identifyDOMElements(){
     header = container.find(".uiHeader");
     title = container.find(".uiHeaderTitle a");
     itemsContainer = $(header.parent().children()[1]);
+}
+
+function popupwindow(url, title, w, h) {
+    var left = (screen.width/2)-(w/2);
+    var top = (screen.height/2)-(h/2);
+    return window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
 }
 
 function loadStories(numStories){
@@ -81,6 +90,37 @@ function loadStories(numStories){
                 loadStories(); //load all stories.
             });
         }
+
+
+        //about div
+        var about = $("<div />").addClass("fbredd-about");
+        var aboutTitle = $("<div />")
+            .html("Replace Facebook Trends with Reddit")
+            .addClass("about-title");
+
+        var extensionLink = $("<a>")
+            .html("extension home")
+            .attr({href: chromeStoreUrl, target:"_blank"});
+
+        var sourceLink = $("<a>")
+            .html("open source")
+            .attr({href: githubUrl, target:"_blank"});
+
+        var shareLink = $("<a>").attr({href: "#"})
+            .html("share it")
+            .click(function(){
+                var url = fbSharerUrl + chromeStoreUrl;
+                popupwindow(url, "fbShare", 500, 300);
+            });
+
+
+        about.append(aboutTitle)
+            .append(extensionLink).append(" | ")
+            .append(sourceLink).append(" | ")
+            .append(shareLink);
+        itemsContainer.append(about);
+
+
 
         //hack for making the list scrollable:
         $(window).trigger('resize');
