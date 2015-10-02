@@ -3,7 +3,6 @@
  */
 
 var redditTitleText = "REDDIT TRENDS";
-var fbTitleText = "FB TRENDS";
 
 var reddit = "https://www.reddit.com";
 var listingLimit = "5";
@@ -14,44 +13,46 @@ var githubUrl= "https://github.com/dslounge/fbRedditTrends";
 
 var initialized = false;
 //key dom elements
-var container = null;
 var rightColFixedContainer = null; //the div that gets a fixed position after updating contents.
-var header = null;
-var fbTrendsTitle = null;
-var fbTrendsContainer = null;
-var redditTrendsTitle = null;
+var container = null;
 var redditContainer = null;
-
-
 
 // function for easy tracing.
 function line(txt) {
     console.log(txt);
 }
 
+function addLoader(){
+  $("<div>").attr("id", "reddit-loader").text("Loading Reddit Stories").appendTo(container);
+}
+
+function removeLoader(){
+  $("#reddit-loader", container).remove();
+}
+
 /**
- * identifies the key dom elements we'll be working with. It also makes the container for reddit trends.
+ * Creates the container if possible
  */
-function identifyDOMElements(){
+function setup(){
     //we need to track this div because it gets a fixed position after loading reddit stories,
     //and we need to undo that when it happens.
     rightColFixedContainer = $($("#rightCol").children().children().children()[0]);
 
     container = $('#pagelet_trending_tags_and_topics');
-    header = container.find(".uiHeader");
 
-    var titleBar = container.find(".uiHeaderTitle");
+    //the pagelet shows up first and the content is banged in asynchronously, so we want to know if it's actually there yet
+    //otherwise, it'll just come through and re-replace us
+    var hasLoaded = $(".uiHeader", container).length;
 
-    fbTrendsTitle = $("<a />").attr({href: "#"});
-    redditTrendsTitle = $("<a />").attr({href: "#"});
+    if (hasLoaded){
+        container.empty();
 
-    titleBar.empty().append(redditTrendsTitle).append("&nbsp;|&nbsp;").append(fbTrendsTitle);
-
-    var trendsParent = header.parent();
-    fbTrendsContainer = $(trendsParent.children()[1]);
-    trendsParent.append($("<div />").attr({id:"fbredd-container"}));
-    redditContainer = container.find("#fbredd-container");
-
+        $("<h6>").addClass("uiHeaderTitle").addClass("redditTitle").css("color", "#9197a3").text(redditTitleText).appendTo(container)
+        redditContainer = $("<div/>").attr("id", "fbredd-container").appendTo(container)
+        addLoader();
+        return true;
+    }
+    else return false
 }
 
 /**
@@ -77,8 +78,9 @@ function loadStories(numStories){
     $.getJSON(url, function (returnObj) {
         line("--stories loaded--");
         var items = [];
-        line(returnObj);
         var listings = returnObj.data.children;
+
+        removeLoader();
 
         $.each(listings, function (key, val) {
             var story = val.data;
@@ -150,45 +152,24 @@ function loadStories(numStories){
 }
 
 
-function init(){
+function initialStories(){
     line("--init--");
-    fbTrendsContainer.hide();
-
-    redditTrendsTitle.html(redditTitleText);
-    fbTrendsTitle.html(fbTitleText);
-
-    fbTrendsTitle.addClass("fbredd-link-inactive");
-    redditTrendsTitle.click(function(){
-        fbTrendsContainer.hide();
-        redditContainer.show();
-
-        fbTrendsTitle.addClass("fbredd-link-inactive");
-        redditTrendsTitle.removeClass("fbredd-link-inactive");
-    });
-
-    fbTrendsTitle.click(function(){
-        redditContainer.hide();
-        fbTrendsContainer.show();
-        fbTrendsTitle.removeClass("fbredd-link-inactive");
-        redditTrendsTitle.addClass("fbredd-link-inactive");
-    });
-
     loadStories(5);
 }
 
 //try running right away. If the elements are available, start loading stories
 //otherwise, just wait until the DOM is ready.
-identifyDOMElements();
-if(fbTrendsContainer){
+if(setup()){
     initialized = true;
-    init();
+    initialStories();
+    listen();
 }
 
 $(function () {
     line("dom ready!");
-    if(!initialized){
-        identifyDOMElements();
-        init();
+    if(!initialized && setup()){
+        initialStories();
+        listen();
     }
 });
 
@@ -198,7 +179,11 @@ $(function () {
  *
  * This uses the arrive.js library: https://github.com/uzairfarooq/arrive/
  */
-$(document).arrive("#pagelet_trending_tags_and_topics .uiHeader", function() {
-    identifyDOMElements();
-    init();
-});
+function listen(){
+  $(document).arrive("#pagelet_trending_tags_and_topics .uiHeader", function() {
+      if(!$(this).hasClass("redditTitle")){
+          setup();
+          initialStories();
+      }
+  });
+}
